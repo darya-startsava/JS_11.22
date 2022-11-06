@@ -1,5 +1,11 @@
 function createIterable(from, to) {
-  if (typeof from !== 'number' || isNaN(from) || typeof to !== 'number' || isNaN(to) || to <= from) {
+  if (
+    typeof from !== 'number' ||
+    isNaN(from) ||
+    typeof to !== 'number' ||
+    isNaN(to) ||
+    to <= from
+  ) {
     throw new Error();
   }
   const obj = {};
