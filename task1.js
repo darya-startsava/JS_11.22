@@ -1,5 +1,8 @@
 Array.prototype.customFilter = function (func, obj) {
-  const boundFunc = func.bind(obj);
+  let boundFunc = func;
+  if (typeof obj === 'object' && obj !== null) {
+    boundFunc = func.bind(obj);
+  }
   const filteredArray = [];
   for (let i = 0; i < this.length; i++) {
     if (boundFunc(this[i], i, this)) {
