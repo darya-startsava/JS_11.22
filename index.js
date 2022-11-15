@@ -1,3 +1,13 @@
+function checkIterability(iterable) {
+  if (
+    iterable === null ||
+    iterable === undefined ||
+    typeof iterable[Symbol.iterator] !== 'function'
+  ) {
+    throw new Error('Not iterable');
+  }
+}
+
 class Stack {
   constructor(maxSize = 10) {
     if (
@@ -62,13 +72,7 @@ class Stack {
   }
 
   static fromIterable(iterable) {
-    if (
-      iterable === null ||
-      iterable === undefined ||
-      typeof iterable[Symbol.iterator] !== 'function'
-    ) {
-      throw new Error('Not iterable');
-    }
+    checkIterability(iterable);
     const stack = new Stack();
     for (const item of iterable) {
       stack.maxSize++;
@@ -78,3 +82,57 @@ class Stack {
     return stack;
   }
 }
+
+class LinkedList {
+  constructor() {
+    this.head = null;
+  }
+  append(elem) {
+    const newNode = { value: elem, next: null };
+    if (!this.head) {
+      this.head = newNode;
+      return;
+    }
+    let lastNode = this.head;
+    while (lastNode.next) {
+      lastNode = lastNode.next;
+    }
+    lastNode.next = newNode;
+  }
+
+  prepend(elem) {
+    const prevNode = { value: elem, next: this.head };
+    this.head = prevNode;
+  }
+
+  find(elem) {
+    let currentNode = this.head;
+    while (currentNode) {
+      if (currentNode.value === elem) {
+        return elem;
+      }
+      currentNode = currentNode.next;
+    }
+    return null;
+  }
+
+  toArray() {
+    const array = [];
+    let currentNode = this.head;
+    while (currentNode) {
+      array.push(currentNode.value);
+      currentNode = currentNode.next;
+    }
+    return array;
+  }
+
+  static fromIterable(iterable) {
+    checkIterability(iterable);
+    const linkedList = new LinkedList();
+    for (const item of iterable) {
+      linkedList.append(item);
+    }
+    return linkedList;
+  }
+}
+
