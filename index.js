@@ -104,16 +104,15 @@ class Stack {
 }
 
 class LinkedList {
-  constructor() {
-    this.head = null;
-  }
+  #head = null;
+
   append(elem) {
     const newNode = { value: elem, next: null };
-    if (!this.head) {
-      this.head = newNode;
+    if (!this.#head) {
+      this.#head = newNode;
       return;
     }
-    let lastNode = this.head;
+    let lastNode = this.#head;
     while (lastNode.next) {
       lastNode = lastNode.next;
     }
@@ -121,12 +120,12 @@ class LinkedList {
   }
 
   prepend(elem) {
-    const prevNode = { value: elem, next: this.head };
-    this.head = prevNode;
+    const prevNode = { value: elem, next: this.#head };
+    this.#head = prevNode;
   }
 
   find(elem) {
-    let currentNode = this.head;
+    let currentNode = this.#head;
     while (currentNode) {
       if (currentNode.value === elem) {
         return elem;
@@ -138,7 +137,7 @@ class LinkedList {
 
   toArray() {
     const array = [];
-    let currentNode = this.head;
+    let currentNode = this.#head;
     while (currentNode) {
       array.push(currentNode.value);
       currentNode = currentNode.next;
