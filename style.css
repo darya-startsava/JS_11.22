@@ -49,6 +49,7 @@ body {
 .expression {
   padding: 10px 10px 0 10px;
   font-size: 25px;
+  min-height: 30px;
 }
 
 .current-number {
