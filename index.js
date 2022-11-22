@@ -1,3 +1,12 @@
+let currentNumber = '0';
+let expression = '';
+let lastEnteredSymbol = '';
+const OPERANDS = '+-/*()';
+const NUMBERS = '0123456789.';
+const currentNumberElement = document.getElementById('current-number');
+const expressionElement = document.getElementById('expression');
+let isError = false;
+
 function toReversePolishNotationExpression(string) {
   const arr = string.split(/\s/).filter((i) => i && i !== ' ');
 
@@ -55,7 +64,10 @@ function reversePolishNotation(expression) {
         stack.pop();
       } else if (item === '/') {
         if (stack[stack.length - 1] === 0) {
-          throw new Error('TypeError: Division by zero.');
+          reset();
+          expressionElement.innerHTML = 'Error: division by zero';
+          isError = true;
+          return;
         }
         stack[stack.length - 2] = stack[stack.length - 2] / stack[stack.length - 1];
         stack.pop();
@@ -64,14 +76,6 @@ function reversePolishNotation(expression) {
   }
   return stack[0];
 }
-
-let currentNumber = '0';
-let expression = '';
-let lastEnteredSymbol = '';
-const operands = '+-/*()';
-const numbers = '0123456789.';
-const currentNumberElement = document.getElementById('current-number');
-const expressionElement = document.getElementById('expression');
 
 function enterNumber(number) {
   if (lastEnteredSymbol === '=') {
@@ -95,7 +99,10 @@ function enterNumber(number) {
 }
 
 function enterOperand(operand) {
-  if (operands.includes(lastEnteredSymbol.trim())) {
+  if (!lastEnteredSymbol) {
+    return;
+  }
+  if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3) + operand;
   } else if (lastEnteredSymbol === '=') {
     expression += operand;
@@ -109,24 +116,48 @@ function enterOperand(operand) {
 }
 
 function calculate() {
-  if (numbers.includes(lastEnteredSymbol.trim())) {
+  if (NUMBERS.includes(lastEnteredSymbol.trim())) {
     expression += currentNumber;
   }
   if (lastEnteredSymbol === '=') {
     return;
   }
-  if (operands.includes(lastEnteredSymbol.trim())) {
-    expression = expression.slice(0, expression.length - 3);
+  if (OPERANDS.includes(lastEnteredSymbol.trim())) {
+    expression += '0';
   }
 
-  // expressionElement.innerHTML = expression;
-  expression = reversePolishNotation(
-    toReversePolishNotationExpression(expression)
-  ).toString();
+  expression =
+    reversePolishNotation(
+      toReversePolishNotationExpression(expression)
+    )?.toString() ?? '';
   currentNumber = '0';
-  expressionElement.innerHTML = expression;
   currentNumberElement.innerHTML = currentNumber;
+  if (isError) {
+    isError = false;
+  } else {
+    expressionElement.innerHTML = expression;
+  }
   lastEnteredSymbol = '=';
+}
+
+function reset() {
+  lastEnteredSymbol = '';
+  currentNumber = '0';
+  currentNumberElement.innerHTML = currentNumber;
+  expression = '';
+  expressionElement.innerHTML = expression;
+}
+
+function deleteNumber() {
+  if (!NUMBERS.includes(lastEnteredSymbol.trim()) || currentNumber === '0') {
+    return;
+  }
+  currentNumber = currentNumber.slice(0, currentNumber.length - 1) || '0';
+  currentNumberElement.innerHTML = currentNumber;
+  lastEnteredSymbol =
+    currentNumber !== '0'
+      ? currentNumber.slice(currentNumber.length - 1)
+      : expression.slice(expression.length - 3);
 }
 
 const one = document.getElementById('one');
@@ -169,3 +200,5 @@ minus.addEventListener('click', () => enterOperand(' - '));
 multiply.addEventListener('click', () => enterOperand(' * '));
 divide.addEventListener('click', () => enterOperand(' / '));
 equals.addEventListener('click', () => calculate());
+clear.addEventListener('click', () => reset());
+del.addEventListener('click', () => deleteNumber());
