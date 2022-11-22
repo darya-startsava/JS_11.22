@@ -1,0 +1,114 @@
+:root {
+  --bacground-color: #F0F4F9;
+  --font-color: #014D69;
+  --calculator-color: #0B87BA;
+  --display-font-color: #014D69;
+  --digits-button-color: #F0F4F9;
+  --digits-button-color-hover: #e6e7e9;
+  --digits-button-color-active: #dedfe0;
+  --signs-button-color: #F3AE5F;
+  --signs-button-color-hover: #d89b55;
+  --signs-button-color-active: #c48d4e;
+  --equals-button-color: #bd7c4d;
+  --equals-button-color-hover: #ad7247;
+  --equals-button-color-active: #9e6740;
+
+}
+
+body {
+  background-color: var(--bacground-color);
+  height: auto;
+}
+
+.wrapper {
+  width: 480px;
+  margin: auto;
+  height: auto;
+  margin-top: 100px;
+
+
+}
+
+.content {
+  margin: 0 auto;
+  height: auto;
+  background-color: var(--calculator-color);
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+
+.output {
+  text-align: end;
+  margin: 0 auto 20px;
+  width: 410px;
+  border-radius: 10px;
+  background-color: var(--bacground-color);
+  color: var(--display-font-color);
+}
+
+.expression {
+  padding: 10px 10px 0 10px;
+  font-size: 25px;
+}
+
+.current-number {
+  padding: 10px;
+  font-size: 35px;
+}
+
+.buttons-wrapper {
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 410px;
+}
+
+button {
+  background-color: var(--signs-button-color);
+  width: 70px;
+  height: 70px;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+
+
+button:hover {
+  background-color: var(--signs-button-color-hover);
+}
+
+button:active {
+  background-color: var(--signs-button-color-active);
+}
+
+.clear, .delete, .equals {
+  width: 155px;
+}
+
+.equals {
+  background-color: var(--equals-button-color);
+}
+
+.equals:hover {
+  background-color: var(--equals-button-color-hover);
+}
+
+.equals:active {
+  background-color: var(--equals-button-color-active);
+}
+
+.number, .point {
+  background-color: var(--digits-button-color);
+}
+
+.number:hover, .point:hover {
+  background-color: var(--digits-button-color-hover);
+}
+
+.number:active, .point:active {
+  background-color: var(--digits-button-color-active);
+}
