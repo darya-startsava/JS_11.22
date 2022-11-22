@@ -67,10 +67,17 @@ function reversePolishNotation(expression) {
 
 let currentNumber = '0';
 let expression = '';
+let lastEnteredSymbol = '';
+const operands = '+-/*()';
+const numbers = '0123456789.';
 const currentNumberElement = document.getElementById('current-number');
 const expressionElement = document.getElementById('expression');
 
 function enterNumber(number) {
+  if (lastEnteredSymbol === '=') {
+    currentNumber = '0';
+    expression = '';
+  }
   if (currentNumber === '0') {
     if (number === '.') {
       currentNumber += number;
@@ -83,23 +90,43 @@ function enterNumber(number) {
     }
     currentNumber = currentNumber + number;
   }
+  lastEnteredSymbol = number;
   currentNumberElement.innerHTML = currentNumber;
 }
 
 function enterOperand(operand) {
-  expression += currentNumber + operand;
+  if (operands.includes(lastEnteredSymbol.trim())) {
+    expression = expression.slice(0, expression.length - 3) + operand;
+  } else if (lastEnteredSymbol === '=') {
+    expression += operand;
+  } else {
+    expression += currentNumber + operand;
+    currentNumber = '0';
+    currentNumberElement.innerHTML = currentNumber;
+  }
   expressionElement.innerHTML = expression;
-  currentNumber = '0';
-  currentNumberElement.innerHTML = currentNumber;
+  lastEnteredSymbol = operand;
 }
 
 function calculate() {
-  expression += currentNumber;
-  expressionElement.innerHTML = expression;
-  currentNumber = '0';
-  currentNumberElement.innerHTML = reversePolishNotation(
+  if (numbers.includes(lastEnteredSymbol.trim())) {
+    expression += currentNumber;
+  }
+  if (lastEnteredSymbol === '=') {
+    return;
+  }
+  if (operands.includes(lastEnteredSymbol.trim())) {
+    expression = expression.slice(0, expression.length - 3);
+  }
+
+  // expressionElement.innerHTML = expression;
+  expression = reversePolishNotation(
     toReversePolishNotationExpression(expression)
-  );
+  ).toString();
+  currentNumber = '0';
+  expressionElement.innerHTML = expression;
+  currentNumberElement.innerHTML = currentNumber;
+  lastEnteredSymbol = '=';
 }
 
 const one = document.getElementById('one');
@@ -120,6 +147,9 @@ const multiply = document.getElementById('multiply');
 const divide = document.getElementById('divide');
 const openBracket = document.getElementById('open-bracket');
 const closeBracket = document.getElementById('close-bracket');
+const clear = document.getElementById('clear');
+const del = document.getElementById('delete');
+const unaryMinus = document.getElementById('unary-minus');
 const equals = document.getElementById('equals');
 
 one.addEventListener('click', () => enterNumber('1'));
