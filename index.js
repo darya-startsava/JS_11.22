@@ -1,7 +1,7 @@
 let currentNumber = '_';
 let expression = '';
 let lastEnteredSymbol = '';
-const OPERANDS = '+-/*()';
+const OPERANDS = '+-/*';
 const NUMBERS = '0123456789.';
 const currentNumberElement = document.getElementById('current-number');
 const expressionElement = document.getElementById('expression');
@@ -133,7 +133,11 @@ function enterOperand(operand) {
   }
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3) + operand;
-  } else if (lastEnteredSymbol === '=') {
+  } else if (
+    lastEnteredSymbol === '=' ||
+    lastEnteredSymbol === ' ) ' ||
+    lastEnteredSymbol === ' ( '
+  ) {
     expression += operand;
   } else {
     expression += currentNumber + operand;
@@ -154,9 +158,7 @@ function calculate() {
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3);
   }
-  if (lastEnteredSymbol === ' ( ' || lastEnteredSymbol === ' ) ') {
-    expression += lastEnteredSymbol;
-  }
+
   expression =
     reversePolishNotation(
       toReversePolishNotationExpression(expression)
@@ -222,9 +224,9 @@ function addOpenBracket() {
 }
 
 function addCloseBracket() {
-  if (lastEnteredSymbol === ' ( ') {
-    return;
-  }
+  // if (lastEnteredSymbol === ' ( ') {
+  //   return;
+  // }
   lastEnteredSymbol = ' ) ';
   expression += currentNumber === '_' ? ' ) ' : currentNumber + ' ) ';
   expressionElement.innerHTML = expression;
