@@ -74,10 +74,13 @@ function reversePolishNotation(expression) {
       }
     }
   }
-  return stack[0];
+  return +(Math.round(stack[0] + 'e+8') + 'e-8');
 }
 
 function enterNumber(number) {
+  if (currentNumber.length > 20) {
+    return;
+  }
   if (lastEnteredSymbol === '=') {
     currentNumber = '0';
     expression = '';
@@ -94,13 +97,14 @@ function enterNumber(number) {
     }
     currentNumber = currentNumber + number;
   }
-  lastEnteredSymbol = number;
+  lastEnteredSymbol = number === '00' ? '0' : number;
   currentNumberElement.innerHTML = currentNumber;
 }
 
 function enterOperand(operand) {
   if (!lastEnteredSymbol) {
-    return;
+    expression = '0' + operand;
+    expressionElement.innerHTML = expression;
   }
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3) + operand;
@@ -160,6 +164,13 @@ function deleteNumber() {
       : expression.slice(expression.length - 3);
 }
 
+function toggleUnaryMinus() {
+  if (currentNumber !== '0') {
+    currentNumber = String(0 - Number(currentNumber));
+    currentNumberElement.innerHTML = currentNumber;
+  }
+}
+
 const one = document.getElementById('one');
 const two = document.getElementById('two');
 const three = document.getElementById('three');
@@ -202,3 +213,4 @@ divide.addEventListener('click', () => enterOperand(' / '));
 equals.addEventListener('click', () => calculate());
 clear.addEventListener('click', () => reset());
 del.addEventListener('click', () => deleteNumber());
+unaryMinus.addEventListener('click', () => toggleUnaryMinus());
