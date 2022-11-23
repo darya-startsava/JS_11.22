@@ -1,4 +1,4 @@
-let currentNumber = '0';
+let currentNumber = '_';
 let expression = '';
 let lastEnteredSymbol = '';
 const OPERANDS = '+-/*()';
@@ -9,6 +9,15 @@ let isError = false;
 
 function toReversePolishNotationExpression(string) {
   const arr = string.split(/\s/).filter((i) => i && i !== ' ');
+
+  const openedBrackets = string.split('').filter((i) => i === '(').length;
+  const closedBrackets = string.split('').filter((i) => i === ')').length;
+  if (openedBrackets != closedBrackets) {
+    reset();
+    expressionElement.innerHTML = 'Error: incorrect use of brackets';
+    isError = true;
+    return;
+  }
 
   const priority = { '+': 1, '-': 1, '*': 2, '/': 2, '(': 0 };
   const stack = [];
@@ -25,7 +34,7 @@ function toReversePolishNotationExpression(string) {
         stack.push(item);
       } else if (item === ')') {
         itemStack = stack.pop();
-        while (itemStack !== '(') {
+        while (itemStack !== '(' && stack.length) {
           expression.push(itemStack);
           itemStack = stack.pop();
         }
@@ -44,6 +53,14 @@ function toReversePolishNotationExpression(string) {
 }
 
 function reversePolishNotation(expression) {
+  if (expression?.match(/[()]/)) {
+    reset();
+    expressionElement.innerHTML = 'Error: incorrect use of brackets';
+    isError = true;
+  }
+  if (isError) {
+    return;
+  }
   const stack = [];
   expression = expression.split(' ').reverse();
   let item;
@@ -74,7 +91,8 @@ function reversePolishNotation(expression) {
       }
     }
   }
-  return +(Math.round(stack[0] + 'e+8') + 'e-8');
+
+  return +(Math.round(stack[0] * 10 ** 8) / 10 ** 8);
 }
 
 function enterNumber(number) {
@@ -82,13 +100,21 @@ function enterNumber(number) {
     return;
   }
   if (lastEnteredSymbol === '=') {
-    currentNumber = '0';
+    currentNumber = '_';
     expression = '';
   }
-  if (currentNumber === '0') {
+  if (currentNumber === '_') {
     if (number === '.') {
-      currentNumber += number;
-    } else if (number !== '0' && number !== '00') {
+      currentNumber = '0' + number;
+    } else {
+      currentNumber = number === '00' ? '0' : number;
+    }
+  } else if (currentNumber === '0') {
+    if (number === '0' || number === '00') {
+      return;
+    } else if (number === '.') {
+      currentNumber = '0' + number;
+    } else {
       currentNumber = number;
     }
   } else {
@@ -103,8 +129,7 @@ function enterNumber(number) {
 
 function enterOperand(operand) {
   if (!lastEnteredSymbol) {
-    expression = '0' + operand;
-    expressionElement.innerHTML = expression;
+    return;
   }
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3) + operand;
@@ -112,7 +137,7 @@ function enterOperand(operand) {
     expression += operand;
   } else {
     expression += currentNumber + operand;
-    currentNumber = '0';
+    currentNumber = '_';
     currentNumberElement.innerHTML = currentNumber;
   }
   expressionElement.innerHTML = expression;
@@ -127,48 +152,84 @@ function calculate() {
     return;
   }
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
-    expression += '0';
+    expression = expression.slice(0, expression.length - 3);
   }
-
+  if (lastEnteredSymbol === ' ( ' || lastEnteredSymbol === ' ) ') {
+    expression += lastEnteredSymbol;
+  }
   expression =
     reversePolishNotation(
       toReversePolishNotationExpression(expression)
     )?.toString() ?? '';
-  currentNumber = '0';
+  if (expression === 'NaN') {
+    reset();
+    expressionElement.innerHTML = 'Error: invalid expression';
+    isError = true;
+  }
+  if (
+    +expression > Number.MAX_SAFE_INTEGER ||
+    +expression < Number.MIN_SAFE_INTEGER
+  ) {
+    reset();
+    expressionElement.innerHTML = 'Error: max range exceeded';
+    isError = true;
+  }
+  currentNumber = '_';
   currentNumberElement.innerHTML = currentNumber;
   if (isError) {
     isError = false;
   } else {
     expressionElement.innerHTML = expression;
+
+    lastEnteredSymbol = '=';
   }
-  lastEnteredSymbol = '=';
 }
 
 function reset() {
   lastEnteredSymbol = '';
-  currentNumber = '0';
+  currentNumber = '_';
   currentNumberElement.innerHTML = currentNumber;
   expression = '';
   expressionElement.innerHTML = expression;
 }
 
 function deleteNumber() {
-  if (!NUMBERS.includes(lastEnteredSymbol.trim()) || currentNumber === '0') {
+  if (!NUMBERS.includes(lastEnteredSymbol.trim()) || currentNumber === '_') {
     return;
   }
-  currentNumber = currentNumber.slice(0, currentNumber.length - 1) || '0';
+  currentNumber = currentNumber.slice(0, currentNumber.length - 1) || '_';
   currentNumberElement.innerHTML = currentNumber;
   lastEnteredSymbol =
-    currentNumber !== '0'
+    currentNumber !== '_'
       ? currentNumber.slice(currentNumber.length - 1)
       : expression.slice(expression.length - 3);
 }
 
 function toggleUnaryMinus() {
-  if (currentNumber !== '0') {
-    currentNumber = String(0 - Number(currentNumber));
+  if (currentNumber !== '_' && +currentNumber !== 0) {
+    currentNumber =
+      +currentNumber > 0 ? `-${currentNumber}` : currentNumber.slice(1);
     currentNumberElement.innerHTML = currentNumber;
   }
+}
+
+function addOpenBracket() {
+  lastEnteredSymbol = ' ( ';
+  expression += currentNumber === '_' ? ' ( ' : currentNumber + ' ( ';
+  expressionElement.innerHTML = expression;
+  currentNumber = '_';
+  currentNumberElement.innerHTML = currentNumber;
+}
+
+function addCloseBracket() {
+  if (lastEnteredSymbol === ' ( ') {
+    return;
+  }
+  lastEnteredSymbol = ' ) ';
+  expression += currentNumber === '_' ? ' ) ' : currentNumber + ' ) ';
+  expressionElement.innerHTML = expression;
+  currentNumber = '_';
+  currentNumberElement.innerHTML = currentNumber;
 }
 
 const one = document.getElementById('one');
@@ -214,3 +275,5 @@ equals.addEventListener('click', () => calculate());
 clear.addEventListener('click', () => reset());
 del.addEventListener('click', () => deleteNumber());
 unaryMinus.addEventListener('click', () => toggleUnaryMinus());
+openBracket.addEventListener('click', () => addOpenBracket());
+closeBracket.addEventListener('click', () => addCloseBracket());
