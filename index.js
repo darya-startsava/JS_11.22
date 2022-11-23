@@ -18,7 +18,19 @@ function toReversePolishNotationExpression(string) {
     isError = true;
     return;
   }
-
+  const stringToCheckBracketsUsing = arr
+    .map((i) => (isNaN(Number(i)) ? i : '1'))
+    .join('');
+  if (
+    stringToCheckBracketsUsing.match(
+      /(\(\))|(\d\()|(\([+\-*/])|([+\-*/]\))|(\)\d)|(\)\()/
+    )
+  ) {
+    reset();
+    expressionElement.innerHTML = 'Error: incorrect use of brackets';
+    isError = true;
+    return;
+  }
   const priority = { '+': 1, '-': 1, '*': 2, '/': 2, '(': 0 };
   const stack = [];
   const expression = [];
@@ -224,9 +236,6 @@ function addOpenBracket() {
 }
 
 function addCloseBracket() {
-  // if (lastEnteredSymbol === ' ( ') {
-  //   return;
-  // }
   lastEnteredSymbol = ' ) ';
   expression += currentNumber === '_' ? ' ) ' : currentNumber + ' ) ';
   expressionElement.innerHTML = expression;
