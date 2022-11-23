@@ -171,7 +171,6 @@ function calculate() {
   if (OPERANDS.includes(lastEnteredSymbol.trim())) {
     expression = expression.slice(0, expression.length - 3);
   }
-
   expression =
     reversePolishNotation(
       toReversePolishNotationExpression(expression)
@@ -289,3 +288,27 @@ del.addEventListener('click', () => deleteNumber());
 unaryMinus.addEventListener('click', () => toggleUnaryMinus());
 openBracket.addEventListener('click', () => addOpenBracket());
 closeBracket.addEventListener('click', () => addCloseBracket());
+
+document.addEventListener('keydown', (event) => {
+  if (NUMBERS.includes(event.key)) {
+    return enterNumber(event.key);
+  }
+  if (OPERANDS.includes(event.key)) {
+    return enterOperand(` ${event.key} `);
+  }
+  if (event.key === 'Backspace') {
+    return deleteNumber();
+  }
+  if (event.key === 'Escape') {
+    return reset();
+  }
+  if (event.key === 'Enter') {
+    return calculate();
+  }
+  if (event.key === '(') {
+    return addOpenBracket();
+  }
+  if (event.key === ')') {
+    return addCloseBracket();
+  }
+});
