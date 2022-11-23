@@ -108,6 +108,7 @@ function reversePolishNotation(expression) {
 }
 
 function enterNumber(number) {
+  expressionElement.innerHTML = expression;
   if (currentNumber.length > 20) {
     return;
   }
