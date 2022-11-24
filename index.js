@@ -103,13 +103,12 @@ function reversePolishNotation(expression) {
       }
     }
   }
-
   return +(Math.round(stack[0] * 10 ** 8) / 10 ** 8);
 }
 
 function enterNumber(number) {
   expressionElement.innerHTML = expression;
-  if (currentNumber.length > 20) {
+  if ((currentNumber + number).length > 16) {
     return;
   }
   if (lastEnteredSymbol === '=') {
@@ -175,7 +174,7 @@ function calculate() {
     reversePolishNotation(
       toReversePolishNotationExpression(expression)
     )?.toString() ?? '';
-  if (expression === 'NaN') {
+  if (expression === 'NaN' || expression.length > 16) {
     reset();
     expressionElement.innerHTML = 'Error: invalid expression';
     isError = true;
