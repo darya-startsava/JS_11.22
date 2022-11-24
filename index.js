@@ -302,7 +302,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     return reset();
   }
-  if (event.key === 'Enter') {
+  if (event.key === 'Enter' || event.key === '=') {
     return calculate();
   }
   if (event.key === '(') {
